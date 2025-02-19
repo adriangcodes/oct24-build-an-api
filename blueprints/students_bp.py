@@ -1,6 +1,9 @@
-from flask import Blueprint
+from flask import Blueprint, request
+from sqlalchemy.exc import IntegrityError
+from psycopg2 import errorcodes
+
 from init import db
-from models.student import Student, many_students, one_student
+from models.student import Student, many_students, one_student, StudentSchema, student_without_id
 
 students_bp = Blueprint('students', __name__)
 
@@ -22,6 +25,30 @@ def get_one_student(student_id):
         return {"error": f"Student with id {student_id} not found."}, 404
 
 # Create - POST /students
+@students_bp.route('/students', methods=['POST'])
+def create_student():
+    try:
+        # Get incoming request body (JSON)
+        data = student_without_id.load(request.json)
+        # Create new instance of Student model
+        new_student = Student(
+            name = data['name'],
+            email = data['email'],
+            address = data.get('address', '')
+        )
+        # Add the instance to the db session
+        db.session.add(new_student)
+        # Commit the instance to the db
+        db.session.commit()
+        return one_student.dump(new_student), 201
+    except IntegrityError as err:
+        if err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
+            return {"error": "Email address already in use."}, 409 # Conflict
+        elif err.orig.pgcode == errorcodes.NOT_NULL_VIOLATION:
+            return {"error": "Field is required."}, 406 # Not acceptable
+        else:
+            return {"error": str(err)}, 400
+
 # Update - PUT /students/<int:student_id>
 # Delete - DELETE /students/<int:student_id>
 
