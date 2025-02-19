@@ -1,6 +1,6 @@
 from flask import Blueprint
 from init import db
-from models.student import Student, many_students
+from models.student import Student, many_students, one_student
 
 students_bp = Blueprint('students', __name__)
 
@@ -12,6 +12,15 @@ def get_all_students():
     return many_students.dump(students)
 
 # Read one - GET /students/<int:student_id>
+@students_bp.route('/students/<int:student_id>')
+def get_one_student(student_id):
+    stmt = db.select(Student).filter_by(id=student_id)
+    student = db.session.scalar(stmt)
+    if student:
+        return one_student.dump(student)
+    else:
+        return {"error": f"Student with id {student_id} not found."}, 404
+
 # Create - POST /students
 # Update - PUT /students/<int:student_id>
 # Delete - DELETE /students/<int:student_id>
