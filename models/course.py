@@ -12,7 +12,7 @@ class Course(db.Model):
     end_date = db.Column(db.Date)
     
     teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.id'))
-    teacher = db.relationship('Teacher') # Pulls data from teacher table without creating table entry in courses
+    teacher = db.relationship('Teacher', back_populates='courses') # Pulls data from teacher table without creating table entry in courses # back_populates forces an update if a dependent record updates
 
     
 class CourseSchema(ma.Schema):
