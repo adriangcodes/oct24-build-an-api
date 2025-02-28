@@ -1,5 +1,7 @@
 from init import db, ma
 from marshmallow_sqlalchemy import fields
+from marshmallow import fields # Required for .String validation
+from marshmallow.validate import Length, And, Regexp # Required for Length validation
 
 
 class Course(db.Model):
@@ -16,6 +18,12 @@ class Course(db.Model):
 
     
 class CourseSchema(ma.Schema):
+    name = fields.String(required=True, validate=And(
+        Length(min=5, error='Name must be at least 5 characters long.'),
+        Regexp('^[A-Za-z0-9 ()-]$', error='Error: only letters, numbers, spaces, parentheses and hyphens allowed') # Provides filter that only allows A-Z, a-z, 0-9, space, parentheses and hyphen in the input
+        ) # Allows Marshmallow to provide data validation
+    )
+    
     teacher = fields.Nested('TeacherSchema') # States that teacher is to be a set of nested fields within the Course schema
     
     class Meta:

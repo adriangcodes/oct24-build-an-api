@@ -43,7 +43,7 @@ def create_course():
         db.session.commit()
         return one_course.dump(new_course), 201
     except Exception as err:
-        return {"error": str(err.orig)}, 400
+        return {"error": str(err)}, 400
 
 # Update - PUT /courses/<int:course_id>
 @courses_bp.route('/courses/<int:course_id>', methods=['PUT', 'PATCH'])
@@ -67,7 +67,7 @@ def update_course(course_id):
         else:
             return {"error": f"Course with id {course_id} not found."}, 404
     except Exception as err:
-        return {"error": str(err.orig)}, 400
+        return {"error": str(err)}, 400
 
 # Delete - DELETE /courses/<int:course_id>
 @courses_bp.route('/courses/<int:course_id>', methods=['DELETE'])
