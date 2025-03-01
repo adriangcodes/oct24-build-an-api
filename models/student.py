@@ -1,4 +1,5 @@
 from init import db, ma
+from marshmallow import fields
 from marshmallow.validate import Email
 
 
@@ -13,7 +14,7 @@ class Student(db.Model):
 
     
 class StudentSchema(ma.Schema):
-    email = Email(required=True) # Email validation
+    # email = Email(required=True) # Email validation # This is broken
     
     class Meta:
         fields = ('id', 'name', 'email', 'address')

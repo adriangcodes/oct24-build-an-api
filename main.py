@@ -1,6 +1,7 @@
 from flask import Flask
 from init import db, ma
 from marshmallow.exceptions import ValidationError
+from dotenv import load_dotenv
 import os
 from blueprints.db_bp import db_bp
 from blueprints.students_bp import students_bp
@@ -9,6 +10,8 @@ from blueprints.courses_bp import courses_bp
 
 def create_app():
     app = Flask(__name__)
+    
+    load_dotenv(override=True) # Required to override the local environment data link and send to cloud instead
     
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_URI')
     
